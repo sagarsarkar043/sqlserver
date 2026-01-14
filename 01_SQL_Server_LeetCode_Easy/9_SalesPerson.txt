@@ -95,8 +95,4 @@ According to orders 3 and 4 in the Orders table, it is easy to tell that only sa
 
 Solution
 
-/* Write your T-SQL query statement below */
-Select SP.name from SalesPerson as SP
-left join Orders as O
-ON O.sales_id = SP.sales_id and  O.com_id = 1
-where O.order_id is null
+select name from SalesPerson where sales_id not in( select sales_id from Orders where com_id in (select com_id from Company where name = 'RED') group by sales_id);
