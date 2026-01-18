@@ -1,0 +1,72 @@
+--Arithmetic Operators
+
+--Problem 1--Calculate total salary including bonus for each employee.
+
+SELECT 
+    EmployeeName,
+    Salary + Bonus AS TotalSalary
+FROM Employees;
+
+--Problem 2--Calculate tax amount for each employee.
+
+SELECT 
+    EmployeeName,
+    Salary * TaxPercent / 100 AS TaxAmount
+FROM Employees;
+
+--Problem 3--Find net salary after tax deduction.
+
+SELECT 
+    EmployeeName,
+    Salary - (Salary * TaxPercent / 100) AS NetSalary
+FROM Employees;
+
+--Problem 4--Calculate total sale value per record (SaleAmount × Quantity).
+
+SELECT 
+    SaleID,
+    SaleAmount * Quantity AS TotalSaleValue
+FROM Sales;
+
+--Problem 5--Calculate discount amount for each sale.
+
+SELECT 
+    SaleID,
+    SaleAmount * DiscountPercent / 100 AS DiscountAmount
+FROM Sales;
+
+--Problem 6--Calculate final sale amount after discount.
+
+SELECT 
+    SaleID,
+    SaleAmount - (SaleAmount * DiscountPercent / 100) AS FinalSaleAmount
+FROM Sales;
+
+--Problem 7--Find monthly salary assuming salary is annual.
+
+SELECT 
+    EmployeeName,
+    Salary / 12 AS MonthlySalary
+FROM Employees;
+
+--Problem 8--Find employees whose salary is divisible by 5,000.
+
+SELECT 
+    EmployeeName,
+    Salary
+FROM Employees
+WHERE Salary % 5000 = 0;
+
+--Problem 9--Calculate total earnings (salary + bonus − tax).
+
+SELECT 
+    EmployeeName,
+    Salary + Bonus - (Salary * TaxPercent / 100) AS TotalEarnings
+FROM Employees;
+
+--Problem 10--Calculate average price per item sold in each sale.
+
+SELECT 
+    SaleID,
+    SaleAmount / Quantity AS PricePerItem
+FROM Sales;
