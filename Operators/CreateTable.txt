@@ -1,0 +1,19 @@
+--Create Table Query
+
+CREATE TABLE Employees (
+    EmployeeID INT IDENTITY PRIMARY KEY,
+    EmployeeName VARCHAR(50),
+    Department VARCHAR(50),
+    Salary DECIMAL(10,2),
+    Bonus DECIMAL(10,2),
+    TaxPercent DECIMAL(5,2)
+);
+
+CREATE TABLE Sales (
+    SaleID INT IDENTITY PRIMARY KEY,
+    EmployeeID INT,
+    SaleAmount DECIMAL(10,2),
+    Quantity INT,
+    DiscountPercent DECIMAL(5,2),
+    FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+);
