@@ -1,0 +1,53 @@
+--Relational Operators
+
+--Q1. Find employees whose salary is greater than 50,000
+SELECT *
+FROM Employees
+WHERE Salary > 50000;
+
+--Q2. List employees whose bonus is less than or equal to 5,000
+SELECT EmployeeName, Bonus
+FROM Employees
+WHERE Bonus <= 5000;
+
+--Q3. Find employees who do NOT belong to the Sales department
+SELECT EmployeeName, Department
+FROM Employees
+WHERE Department <> 'Sales';
+
+--Q4. Display employees whose tax percentage is exactly 10%
+SELECT EmployeeName, TaxPercent
+FROM Employees
+WHERE TaxPercent = 10;
+
+--Q5. Find sales records where sale amount is greater than or equal to 20,000
+SELECT *
+FROM Sales
+WHERE SaleAmount >= 20000;
+
+--Q6. List sales where quantity sold is less than 5
+SELECT SaleID, Quantity
+FROM Sales
+WHERE Quantity < 5;
+
+--Q7. Find employees whose salary is between 40,000 and 60,000
+SELECT EmployeeName, Salary
+FROM Employees
+WHERE Salary >= 40000
+  AND Salary <= 60000;
+
+--Q8. Show sales where discount percentage is NOT equal to 5%
+SELECT SaleID, DiscountPercent
+FROM Sales
+WHERE DiscountPercent <> 5;
+
+--Q9. Find employees whose salary is greater than their bonus
+SELECT EmployeeName, Salary, Bonus
+FROM Employees
+WHERE Salary > Bonus;
+
+--Q10. Display employees whose monthly salary is greater than 4,000
+
+SELECT EmployeeName, Salary
+FROM Employees
+WHERE Salary / 12 > 4000;
