@@ -1,0 +1,57 @@
+--Order By Clause
+
+--Q1. List all customers sorted by name in ascending order
+SELECT CustomerName, City
+FROM Customers
+ORDER BY CustomerName ASC;
+
+--Q2. Display customers sorted by credit limit in descending order
+SELECT CustomerName, CreditLimit
+FROM Customers
+ORDER BY CreditLimit DESC;
+
+--Q3. List products sorted by price from highest to lowest
+SELECT ProductName, Price
+FROM Products
+ORDER BY Price DESC;
+
+--Q4. Show orders sorted by order date (latest orders first)
+SELECT OrderID, OrderDate
+FROM Orders
+ORDER BY OrderDate DESC;
+
+--Q5. Display orders sorted by quantity first (high to low), then by discount (low to high)
+SELECT OrderID, Quantity, DiscountPercent
+FROM Orders
+ORDER BY Quantity DESC, DiscountPercent ASC;
+
+--Q6. List customers sorted by city and then by name
+SELECT CustomerName, City
+FROM Customers
+ORDER BY City ASC, CustomerName ASC;
+
+--Q7. Display products sorted by category and price descending
+SELECT ProductName, Category, Price
+FROM Products
+ORDER BY Category ASC, Price DESC;
+
+--Q8. Show top-priority orders (highest discount first)
+SELECT OrderID, DiscountPercent
+FROM Orders
+ORDER BY DiscountPercent DESC;
+
+
+--Q9. Display orders sorted by total order value
+
+--(Quantity × Price)
+
+SELECT 
+    O.OrderID,
+    P.ProductName,
+    O.Quantity,
+    P.Price,
+    (O.Quantity * P.Price) AS TotalOrderValue
+FROM Orders O
+JOIN Products P
+    ON O.ProductID = P.ProductID
+ORDER BY TotalOrderValue DESC;
