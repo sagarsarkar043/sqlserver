@@ -1,0 +1,25 @@
+--Insert Sample Data
+--Customers
+INSERT INTO Customers VALUES
+(1, 'Amit', 'Mumbai', 'Premium', 100000),
+(2, 'Neha', 'Delhi', 'Regular', 50000),
+(3, 'Rina', 'Bangalore', 'Premium', 120000),
+(4, 'Suresh', 'Mumbai', 'Regular', 40000),
+(5, 'Karan', 'Pune', 'Regular', 60000);
+
+--Products
+INSERT INTO Products VALUES
+(101, 'Laptop', 'Electronics', 60000),
+(102, 'Mobile', 'Electronics', 30000),
+(103, 'Desk', 'Furniture', 15000),
+(104, 'Chair', 'Furniture', 8000),
+(105, 'Headphones', 'Accessories', 3000);
+
+--Orders
+INSERT INTO Orders VALUES
+(1001, 1, 101, '2025-01-05', 1, 10),
+(1002, 2, 102, '2025-01-10', 2, 5),
+(1003, 3, 103, '2025-01-15', 1, 0),
+(1004, 4, 104, '2025-02-01', 4, 15),
+(1005, 5, 105, '2025-02-10', 3, 5),
+(1006, 1, 102, '2025-02-12', 1, 10);
