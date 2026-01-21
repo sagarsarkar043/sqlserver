@@ -1,0 +1,634 @@
+--Creating a new DB
+CREATE DATABASE CommandDemo; 
+
+-- Using the same DB for creating Tables
+USE CommandDemo; 
+
+--CREATE Tables Query for creating the tables
+
+CREATE TABLE Customers ( 
+    CustomerID INT IDENTITY PRIMARY KEY, 
+    CustomerName NVARCHAR(100), 
+    City NVARCHAR(50), 
+    CreditLimit DECIMAL(10,2) 
+); 
+ 
+CREATE TABLE Orders ( 
+    OrderID INT IDENTITY PRIMARY KEY, 
+    CustomerID INT, 
+    OrderDate DATE, 
+    Amount DECIMAL(10,2), 
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID) 
+); 
+
+--INSERT Statement for inserting data records in Customer and Orders Table
+
+--Customer
+
+
+INSERT INTO Customers (CustomerName, City, CreditLimit) VALUES
+('Amit Sharma', 'Delhi', 50000.00),
+('Neha Verma', 'Mumbai', 75000.00),
+('Rohit Mehta', 'Ahmedabad', 60000.00),
+('Priya Singh', 'Lucknow', 45000.00),
+('Ankit Jain', 'Jaipur', 80000.00),
+('Pooja Kulkarni', 'Pune', 70000.00),
+('Rahul Khanna', 'Chandigarh', 55000.00),
+('Sneha Iyer', 'Chennai', 90000.00),
+('Vikas Gupta', 'Noida', 65000.00),
+('Kavita Nair', 'Kochi', 50000.00),
+('Suresh Rao', 'Bangalore', 100000.00),
+('Meenal Shah', 'Surat', 72000.00),
+('Arjun Malhotra', 'Gurgaon', 85000.00),
+('Rina Das', 'Kolkata', 48000.00),
+('Mohit Bansal', 'Indore', 53000.00),
+('Swati Patil', 'Nashik', 60000.00),
+('Karan Oberoi', 'Amritsar', 57000.00),
+('Nidhi Arora', 'Faridabad', 62000.00),
+('Deepak Yadav', 'Kanpur', 45000.00),
+('Alka Joshi', 'Udaipur', 52000.00);
+
+
+
+
+--Orders
+
+INSERT INTO Orders (CustomerID, OrderDate, Amount) VALUES
+(1, '2025-01-05', 12000.00),
+(2, '2025-01-06', 18000.00),
+(3, '2025-01-07', 9500.00),
+(4, '2025-01-08', 22000.00),
+(5, '2025-01-09', 30000.00),
+(6, '2025-01-10', 15000.00),
+(7, '2025-01-11', 17000.00),
+(8, '2025-01-12', 25000.00),
+(9, '2025-01-13', 11000.00),
+(10, '2025-01-14', 9000.00),
+(11, '2025-01-15', 40000.00),
+(12, '2025-01-16', 16000.00),
+(13, '2025-01-17', 28000.00),
+(14, '2025-01-18', 13000.00),
+(15, '2025-01-19', 14500.00),
+(16, '2025-01-20', 19000.00),
+(17, '2025-01-21', 21000.00),
+(18, '2025-01-22', 17500.00),
+(19, '2025-01-23', 9800.00),
+(20, '2025-01-24', 15500.00);
+
+ 
+--UPDATE Statements 
+
+--Update a Customer’s City -- Customer Amit Sharma has moved to Gurgaon.
+
+UPDATE Customers
+SET City = 'Gurgaon'
+WHERE CustomerName = 'Amit Sharma';
+
+--Increase Credit Limit for One Customer--Give Neha Verma a ₹10,000 credit limit increase.
+
+UPDATE Customers
+SET CreditLimit = CreditLimit + 10000
+WHERE CustomerName = 'Neha Verma';
+
+--Update Credit Limit for All Customers in a City--All customers in Mumbai get a higher credit limit of ₹90,000.
+
+UPDATE Customers
+SET CreditLimit = 90000
+WHERE City = 'Mumbai';
+
+--Correct a Wrong Order Amount--Order ID = 3 was entered incorrectly. Correct amount is ₹15,000.
+
+UPDATE Orders
+SET Amount = 15000
+WHERE OrderID = 3;
+
+--Update Order Date--Order ID = 5 was placed one day earlier.
+
+UPDATE Orders
+SET OrderDate = '2025-01-08'
+WHERE OrderID = 5;
+
+--Apply Flat Discount on an Order--Give a ₹1,000 discount on Order ID = 10.
+
+UPDATE Orders
+SET Amount = Amount - 1000
+WHERE OrderID = 10;
+
+--Set Default Credit Limit--Some customers don’t have a credit limit. Set it to ₹40,000.
+
+UPDATE Customers
+SET CreditLimit = 40000
+WHERE CreditLimit IS NULL;
+
+--Update Multiple Columns Together-Customer Rohit Mehta moved to Pune and got a new credit limit.
+
+UPDATE Customers
+SET City = 'Pune',
+    CreditLimit = 70000
+WHERE CustomerName = 'Rohit Mehta';
+
+--Increase All Order Amounts Slightly--Prices increased slightly; increase all order amounts by ₹500.
+
+UPDATE Orders
+SET Amount = Amount + 500;
+
+--SELECT Statement to get a table view of the data
+
+SELECT *
+FROM Customers
+WHERE City = 'Mumbai';
+
+--DROP Table Statement to perform DDL
+
+CREATE TABLE A ( 
+    OrderID INT PRIMARY KEY, 
+    CustomerID INT); 
+
+INSERT INTO A (OrderID,CustomerID) VALUES
+(345,567);
+
+-- Drop an Unused Table--The Orders table is no longer required.
+
+DROP TABLE A;
+
+
+--Drop Table Only If It Exists (Safe Way)--Avoid error if table doesn’t exist.
+
+DROP TABLE IF EXISTS Orders;
+
+--TRUNCATE Statement 
+
+--Remove All Orders Data--Clear all order records before loading fresh data.
+
+TRUNCATE TABLE Orders;
+
+
+--ALTER Statement Queries
+
+--Add a New Column--Store customer email addresses.
+
+ALTER TABLE A
+ADD Email NVARCHAR(100);
+
+--Change Column Data Type--Increase length of City column.
+
+ALTER TABLE A
+ALTER COLUMN CustomerID NVARCHAR(100);
+
+--Drop a Column--Email column is no longer required.
+
+ALTER TABLE Customers
+DROP COLUMN Email;
+
+--DELETE Statement 
+
+--Delete One Specific Order--Order ID = 5 was created by mistake.
+
+DELETE FROM Orders
+WHERE OrderID = 5;
+
+--Delete Orders Below a Certain Amount--Remove test orders with amount less than ₹1,000.
+
+DELETE FROM Orders
+WHERE Amount < 1000;
+
+--Delete Orders for a Specific Customer--Customer ID = 10 requested order cancellation.
+
+DELETE FROM Orders
+WHERE CustomerID = 10;
+
+--Delete Orders from a Specific Date--Delete all orders created on Jan 1, 2025.
+
+DELETE FROM Orders
+WHERE OrderDate = '2025-01-01';
+
+Select * from Customers;
+
+Select * from Orders;
+
+--COMMIT Statement Example
+
+BEGIN TRAN; 
+ 
+UPDATE Customers 
+SET City = 'Chennai' 
+WHERE CustomerID = 1; 
+ 
+COMMIT; 
+
+Select * from Customers where CustomerID=1;
+
+--ROLLBACK STATEMENT Example
+
+Select * from Customers where CustomerID=2;
+
+BEGIN TRAN; 
+ 
+UPDATE Customers 
+SET CreditLimit = 200000 
+WHERE CustomerID = 2; 
+ 
+ROLLBACK;
+
+--SAVE TRANS STATEMENT Queries example
+
+BEGIN TRAN; 
+ 
+UPDATE Customers 
+SET City = 'Mumbai' 
+WHERE CustomerID = 3; 
+ 
+ Select * from Customers where CustomerID=3;
+SAVE TRAN Step1; 
+ 
+UPDATE Customers 
+SET CreditLimit = 150000 
+WHERE CustomerID = 3; 
+ 
+ROLLBACK TRAN Step1; 
+ 
+COMMIT; 
+
+--Merge example
+
+-- Target Table (Main Table)
+CREATE TABLE OC (
+    CustomerID INT PRIMARY KEY,
+    CustomerName NVARCHAR(100),
+    City NVARCHAR(50),
+    CreditLimit INT
+);
+
+--Insert data into Customers
+INSERT INTO OC VALUES
+(1, 'Amit', 'Delhi', 50000),
+(2, 'Neha', 'Mumbai', 60000),
+(3, 'Rohit', 'Pune', 55000),
+(4, 'Priya', 'Chennai', 65000);
+
+--Source Table (Incoming / New Data)
+CREATE TABLE NewC (
+    CustomerID INT,
+    CustomerName NVARCHAR(100),
+    City NVARCHAR(50),
+    CreditLimit INT
+);
+
+--Insert data into NewCustomers
+INSERT INTO NewC VALUES
+(2, 'Neha Verma', 'Mumbai', 70000),   -- existing (update)
+(3, 'Rohit', 'Bangalore', 58000),    -- existing (update)
+(5, 'Ankit', 'Noida', 50000),         -- new (insert)
+(6, 'Pooja', 'Pune', 62000);          -- new (insert)
+
+/*
+Basic MERGE Syntax
+MERGE TargetTable AS T
+USING SourceTable AS S
+ON condition
+WHEN MATCHED THEN UPDATE
+WHEN NOT MATCHED THEN INSERT;
+*/
+
+/*
+Problem 1: Update existing customers and insert new ones
+Update customer details if CustomerID exists, Insert customer if 
+CustomerID does not exist
+
+*/
+
+--Solution
+MERGE OC AS T
+USING NewC AS S
+ON T.CustomerID = S.CustomerID
+
+WHEN MATCHED THEN
+    UPDATE SET
+        T.CustomerName = S.CustomerName,
+        T.City = S.City,
+        T.CreditLimit = S.CreditLimit
+
+WHEN NOT MATCHED THEN
+    INSERT (CustomerID, CustomerName, City, CreditLimit)
+    VALUES (S.CustomerID, S.CustomerName, S.City, S.CreditLimit);
+
+Select * from OC;
+Select * from NewC;
+
+/*Problem 2: Insert only new customers (ignore existing),Requirement-Add 
+customers only if they don’t exist
+*/
+MERGE OC AS T
+USING NewC AS S
+ON T.CustomerID = S.CustomerID
+
+WHEN NOT MATCHED THEN
+    INSERT (CustomerID, CustomerName, City, CreditLimit)
+    VALUES (S.CustomerID, S.CustomerName, S.City, S.CreditLimit);
+
+/*Problem 3: Update only credit limit for existing customers-Requirement-Update
+ CreditLimit only,Do not insert new customers
+*/
+
+MERGE OC AS T
+USING NewC AS S
+ON T.CustomerID = S.CustomerID
+
+WHEN MATCHED THEN
+    UPDATE SET
+        T.CreditLimit = S.CreditLimit;
+
+/*
+Problem 4: Delete customers not present in new data
+Requirement-Remove customers from Customers ,If they are not present in
+ NewCustomers
+*/
+
+MERGE OC AS T
+USING NewC AS S
+ON T.CustomerID = S.CustomerID
+
+WHEN NOT MATCHED BY SOURCE THEN
+    DELETE;
+
+
+
+
+🟢 Problem 5: Full synchronization (Update + Insert + Delete)
+Requirement
+
+Update matching customers
+
+Insert new customers
+
+Delete missing customers
+
+
+MERGE OC AS T
+USING NewC AS S
+ON T.CustomerID = S.CustomerID
+
+WHEN MATCHED THEN
+    UPDATE SET
+        T.CustomerName = S.CustomerName,
+        T.City = S.City,
+        T.CreditLimit = S.CreditLimit
+
+WHEN NOT MATCHED THEN
+    INSERT (CustomerID, CustomerName, City, CreditLimit)
+    VALUES (S.CustomerID, S.CustomerName, S.City, S.CreditLimit)
+
+WHEN NOT MATCHED BY SOURCE THEN
+    DELETE;
+
+
+
+ --Data Control Language
+
+ drop table C;
+--Custom Table
+CREATE TABLE C (
+    CustomerID INT PRIMARY KEY,
+    CustomerName VARCHAR(100),
+    City VARCHAR(50),
+    CreditScore INT
+);
+
+--Accounts Table
+CREATE TABLE A (
+    AccountID INT PRIMARY KEY,
+    CustomerID INT,
+    AccountType VARCHAR(20),
+    Balance DECIMAL(12,2),
+    FOREIGN KEY (CustomerID) REFERENCES C(CustomerID)
+);
+
+drop table A;
+
+--Transactions Table
+CREATE TABLE T (
+    TransactionID INT PRIMARY KEY,
+    AccountID INT,
+    TransactionDate DATE,
+    Amount DECIMAL(10,2),
+    TransactionType VARCHAR(20),
+    FOREIGN KEY (AccountID) REFERENCES A(AccountID)
+);
+
+
+--Customers
+INSERT INTO C VALUES
+(1, 'Rahul Sharma', 'Mumbai', 780),
+(2, 'Anita Verma', 'Delhi', 720),
+(3, 'Suresh Iyer', 'Chennai', 690),
+(4, 'Neha Singh', 'Bangalore', 810);
+
+--Accounts
+INSERT INTO A VALUES
+(101, 1, 'Savings', 50000),
+(102, 2, 'Current', 120000),
+(103, 3, 'Savings', 30000),
+(104, 4, 'Savings', 200000);
+
+--Transactions
+INSERT INTO T VALUES
+(1001, 101, '2025-01-01', 5000, 'Debit'),
+(1002, 102, '2025-01-02', 10000, 'Credit'),
+(1003, 103, '2025-01-03', 2000, 'Debit'),
+(1004, 104, '2025-01-04', 15000, 'Debit');
+
+
+--Create Users (for DCL Practice)
+CREATE USER AnalystUser WITHOUT LOGIN;
+CREATE USER TellerUser WITHOUT LOGIN;
+CREATE USER ManagerUser WITHOUT LOGIN;
+
+--Business Problems
+--Problem 1: Analyst can ONLY view customer and account data
+--Requirement--Analyst should be able to SELECT
+
+--No INSERT, UPDATE, DELETE allowed
+
+GRANT SELECT ON C TO AnalystUser;
+GRANT SELECT ON A TO AnalystUser;
+
+--Quick testing of Access
+
+--Step 1: Impersonate AnalystUser
+EXECUTE AS USER = 'AnalystUser';
+
+--Step 2: Check SELECT
+SELECT * FROM C;
+SELECT * FROM A;
+
+
+-- Query executes successfully → SELECT permission confirmed
+
+--Step 3: Check INSERT (Should FAIL)
+INSERT INTO C VALUES (5, 'Test User', 'Pune', 700);
+
+
+--Error: The INSERT permission was denied on the object 'Customers'
+
+-- Step 4: Check UPDATE 
+UPDATE C
+SET City = 'Pune'
+WHERE CustomerID = 1;
+
+
+--Permission denied
+
+--Step 5: Check DELETE (Should FAIL)
+DELETE FROM C WHERE CustomerID = 1;
+--Permission denied
+
+--Step 6: Revert Context
+REVERT;
+
+--Problem 2: Teller can insert and update transactions but cannot delete them
+--Requirement--INSERT, UPDATE allowed
+
+--DELETE strictly prohibited
+
+GRANT INSERT, UPDATE ON T TO TellerUser;
+DENY DELETE ON T TO TellerUser;
+
+--Quick testing of Access
+
+--Step 1: Switch to TellerUser
+EXECUTE AS USER = 'TellerUser';
+
+--Step 2: Test INSERT 
+INSERT INTO T
+VALUES (1007, 101, '2025-01-05', 3000, 'Credit');
+
+
+--INSERT successful → permission confirmed
+
+--Step 3: Test UPDATE
+UPDATE T
+SET Amount = 3500
+WHERE TransactionID = 1005;
+
+Select * from T;
+
+
+Revert;
+
+✔ UPDATE successful
+
+--Step 4: Test DELETE (Should FAIL – DENY)
+DELETE FROM T WHERE TransactionID = 1005;
+
+
+--Error:--The DELETE permission was denied on the object 'Transactions'
+
+--Problem 3: Manager has full access to Accounts but cannot drop the table
+/*Requirement-Can SELECT, INSERT, UPDATE, DELETE, Cannot ALTER or DROP
+*/
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON A TO ManagerUser;
+DENY ALTER ON A TO ManagerUser;
+Revert;
+
+--Quick Testing of access
+
+--Step 1: Switch to ManagerUser
+EXECUTE AS USER = 'ManagerUser';
+
+SELECT 
+    prin.name AS PrincipalName,
+    prin.type_desc AS PrincipalType,
+    perm.permission_name,
+    perm.state_desc,
+    OBJECT_NAME(perm.major_id) AS ObjectName
+FROM sys.database_permissions perm
+JOIN sys.database_principals prin
+    ON perm.grantee_principal_id = prin.principal_id
+WHERE perm.major_id = OBJECT_ID('dbo.A');
+
+
+-- Step 2: Test SELECT 
+SELECT * FROM A;
+
+
+--SELECT successful
+
+--Step 3: Test INSERT
+INSERT INTO A
+VALUES (109, 1, 'Savings', 75000);
+
+--INSERT successful
+
+--Step 4: Test UPDATE
+UPDATE A
+SET Balance = Balance + 5000
+WHERE AccountID = 105;
+
+
+-- UPDATE successful
+
+-- Step 5: Test DELETE 
+DELETE FROM A WHERE AccountID = 105;
+
+--DELETE successful
+
+--Step 6: Test ALTER
+ALTER TABLE A ADD Type VARCHAR(20);
+
+
+-- Error:
+--The ALTER permission was denied on the object 'Accounts'
+
+--Step 7: Test DROP (
+DROP TABLE A;
+
+--Error:
+
+--Cannot drop the table 'Accounts' because it does not exist or you do not have permission.
+
+
+--Problem 4: Teller should not access customer personal data at all
+/*
+Requirement--No access to Customers table
+*/
+
+-- Solution
+Revert;
+
+DENY SELECT ON C TO TellerUser;
+
+--Quick Testing of Access
+
+--Step 1: Switch to TellerUser
+EXECUTE AS USER = 'TellerUser';
+
+--Step 2: Test SELECT
+SELECT * FROM C;
+
+
+-- Expected Error: The SELECT permission was denied on the object 'Customers'
+-- Confirms no customer data exposure
+
+-- Step 3: Test WHERE Clause
+SELECT CustomerName FROM C WHERE City = 'Mumbai';
+-- Permission denied
+-- DENY blocks all SELECT access, regardless of filters or columns.
+
+--Step 4: Revert Context
+REVERT;
+
+--How to view all the permissions
+
+SELECT 
+    prin.name AS PrincipalName,
+    prin.type_desc AS PrincipalType,
+    perm.permission_name,
+    perm.state_desc,
+    OBJECT_NAME(perm.major_id) AS ObjectName
+FROM sys.database_permissions perm
+JOIN sys.database_principals prin
+    ON perm.grantee_principal_id = prin.principal_id
+WHERE perm.major_id = OBJECT_ID('dbo.T');
+
+REVERT;
