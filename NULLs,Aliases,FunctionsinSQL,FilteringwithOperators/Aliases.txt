@@ -1,0 +1,107 @@
+Create Database Module6
+
+use Module6;
+
+--Create Tables and insert datarecords
+
+--Customers
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    CustomerName VARCHAR(100),
+    City VARCHAR(50),
+    JoinDate DATE
+);
+
+--Products
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY,
+    ProductName VARCHAR(100),
+    Category VARCHAR(50),
+    Price DECIMAL(10,2)
+);
+
+--Orders
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    CustomerID INT,
+    OrderDate DATE,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+--OrderDetails
+CREATE TABLE OrderDetails (
+    OrderDetailID INT PRIMARY KEY,
+    OrderID INT,
+    ProductID INT,
+    Quantity INT,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+--Customers
+
+INSERT INTO Customers VALUES
+(1, 'Amit Sharma', 'Mumbai', '2023-01-10'),
+(2, 'Neha Verma', 'Delhi', '2023-02-15'),
+(3, 'Rohit Singh', 'Pune', '2023-03-20'),
+(4, 'Anjali Mehta', 'Mumbai', '2023-04-05');
+
+--Products
+INSERT INTO Products VALUES
+(101, 'Laptop', 'Electronics', 60000),
+(102, 'Mobile', 'Electronics', 25000),
+(103, 'Headphones', 'Accessories', 3000),
+(104, 'Office Chair', 'Furniture', 12000);
+
+--Orders
+INSERT INTO Orders VALUES
+(1001, 1, '2024-01-05'),
+(1002, 2, '2024-01-10'),
+(1003, 1, '2024-02-15'),
+(1004, 3, '2024-02-20');
+
+--OrderDetails
+INSERT INTO OrderDetails VALUES
+(1, 1001, 101, 1),
+(2, 1001, 103, 2),
+(3, 1002, 102, 1),
+(4, 1003, 104, 1),
+(5, 1004, 103, 3);
+
+--Business problems in Aliases
+
+--Question List all orders placed in January 2024
+
+SELECT * 
+FROM Orders as O
+WHERE O.OrderDate BETWEEN '2024-01-01' AND '2024-01-31';
+
+
+--Question -- Count total number of customers
+
+SELECT COUNT(*) AS TotalCustomers
+FROM Customers;
+
+--Question --Find the total quantity sold for each product
+
+SELECT 
+    ProductID,
+    SUM(Quantity) AS TotalQuantity
+FROM OrderDetails
+GROUP BY ProductID;
+
+--Question--Display orders along with customer names
+
+SELECT 
+    o.OrderID,
+    c.CustomerName,
+    o.OrderDate
+FROM Orders o
+JOIN Customers c
+ON o.CustomerID = c.CustomerID;
+
+--Question--Show total number of orders placed
+
+SELECT COUNT(*) AS TotalOrders
+FROM Orders;
+
