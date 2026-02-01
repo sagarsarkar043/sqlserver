@@ -1,0 +1,22 @@
+--Create Tables
+
+CREATE TABLE Employees (
+    EmpID INT PRIMARY KEY,
+    EmpName VARCHAR(50),
+    ManagerID INT,
+    DeptID INT,
+    Salary INT,
+    JoinDate DATE
+);
+
+CREATE TABLE Departments (
+    DeptID INT PRIMARY KEY,
+    DeptName VARCHAR(50)
+);
+
+CREATE TABLE Sales (
+    SaleID INT PRIMARY KEY,
+    EmpID INT,
+    SaleAmount INT,
+    SaleDate DATE
+);
