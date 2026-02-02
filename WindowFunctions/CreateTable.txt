@@ -1,0 +1,13 @@
+--Create Table
+CREATE TABLE Sales_Data (
+    SaleID INT PRIMARY KEY,
+    SaleDate DATE,
+    Region VARCHAR(20),
+    Country VARCHAR(20),
+    City VARCHAR(20),
+    CustomerID INT,
+    Product VARCHAR(30),
+    Category VARCHAR(30),
+    SalesAmount DECIMAL(10,2),
+    Quantity INT
+);
