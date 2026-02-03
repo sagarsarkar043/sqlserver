@@ -1,0 +1,533 @@
+Create database demo10;
+
+use demo10;
+
+--Create Tables
+
+CREATE TABLE Employees (
+    EmpID INT PRIMARY KEY,
+    EmpName VARCHAR(50),
+    ManagerID INT,
+    DeptID INT,
+    Salary INT,
+    JoinDate DATE
+);
+
+INSERT INTO Employees VALUES
+(1,'CEO',NULL,1,200000,'2015-01-01'),
+(2,'CTO',1,1,150000,'2016-03-12'),
+(3,'CFO',1,2,145000,'2016-05-20'),
+(4,'Dev Manager',2,1,120000,'2017-07-01'),
+(5,'QA Manager',2,1,115000,'2018-01-10'),
+(6,'Developer A',4,1,90000,'2019-02-15'),
+(7,'Developer B',4,1,85000,'2020-04-18'),
+(8,'QA A',5,1,80000,'2019-06-21'),
+(9,'Accountant',3,2,75000,'2019-09-10');
+
+
+CREATE TABLE Departments (
+    DeptID INT PRIMARY KEY,
+    DeptName VARCHAR(50)
+);
+
+
+INSERT INTO Departments VALUES
+(1,'Technology'),
+(2,'Finance');
+
+
+CREATE TABLE Sales (
+    SaleID INT PRIMARY KEY,
+    EmpID INT,
+    SaleAmount INT,
+    SaleDate DATE
+);
+
+
+INSERT INTO Sales VALUES
+(1,6,50000,'2024-01-05'),
+(2,6,30000,'2024-01-15'),
+(3,7,45000,'2024-02-01'),
+(4,8,20000,'2024-02-12'),
+(5,9,25000,'2024-03-10');
+
+
+Select * from Sales;
+Select * from Departments;
+Select * from Employees;
+
+--Q1--List all employees with department name
+
+WITH EmpDept AS (
+  SELECT e.EmpID, e.EmpName, d.DeptName
+  FROM Employees e
+  JOIN Departments d ON e.DeptID = d.DeptID
+)
+SELECT * FROM EmpDept;
+
+Select * from Employees;
+
+
+--Q2--Employees earning more than department average
+WITH DeptAvg AS (
+  SELECT DeptID, AVG(Salary) AvgSalary
+  FROM Employees
+  GROUP BY DeptID
+)
+SELECT e.*
+FROM Employees e
+JOIN DeptAvg d ON e.DeptID = d.DeptID
+WHERE e.Salary > d.AvgSalary;
+
+
+  SELECT DeptID, AVG(Salary) AvgSalary
+  FROM Employees
+  GROUP BY DeptID
+
+  Select * from Employees;
+
+--Using Sub Query
+
+SELECT *
+FROM Employees e
+WHERE e.Salary >
+(
+    SELECT AVG(Salary)
+    FROM Employees
+    WHERE DeptID = e.DeptID
+);
+
+--Q3--Count employees per department
+
+
+WITH DeptCount AS (
+  SELECT DeptID, COUNT(*) EmpCount
+  FROM Employees
+  GROUP BY DeptID
+)
+SELECT * FROM DeptCount;
+
+--Q4--Show employees hired after 2018
+WITH RecentJoins AS (
+  SELECT * FROM Employees
+  WHERE JoinDate > '2018-12-31'
+)
+SELECT * FROM RecentJoins;
+
+--Q5--Highest salary in each department
+WITH MaxSal AS (
+  SELECT DeptID, MAX(Salary) MaxSalary
+  FROM Employees
+  GROUP BY DeptID
+)
+SELECT * FROM MaxSal;
+
+--Q6--Employees without managers (Top level)
+WITH TopEmp AS (
+  SELECT * FROM Employees WHERE ManagerID IS NULL
+)
+SELECT * FROM TopEmp;
+
+Select * from Employees;
+
+
+--Q7--Total sales per employee
+WITH EmpSales AS (
+  SELECT EmpID, SUM(SaleAmount) TotalSales
+  FROM Sales
+  GROUP BY EmpID
+)
+SELECT * FROM EmpSales;
+
+--Q8--Employees with no sales
+
+WITH SalesEmp AS (
+  SELECT DISTINCT EmpID FROM Sales
+)
+SELECT *
+FROM Employees
+WHERE EmpID NOT IN (SELECT EmpID FROM SalesEmp);
+
+Select * from Sales;
+
+
+--Q9--Department-wise salary expense
+WITH DeptExpense AS (
+  SELECT DeptID, SUM(Salary) TotalSalary
+  FROM Employees
+  GROUP BY DeptID
+)
+SELECT * FROM DeptExpense;
+
+--Q10-- Rename salary bands using CTE
+WITH SalaryBand AS (
+  SELECT EmpName,
+         CASE 
+           WHEN Salary >= 150000 THEN 'High'
+           WHEN Salary >= 100000 THEN 'Medium'
+           ELSE 'Low'
+         END AS SalaryLevel
+  FROM Employees
+)
+SELECT * FROM SalaryBand;
+
+--Q11--Rank employees by salary within department
+
+WITH RankedEmp AS (
+  SELECT *, RANK() OVER(PARTITION BY DeptID ORDER BY Salary DESC) rnk
+  FROM Employees
+)
+SELECT * FROM RankedEmp where rnk=1;
+
+WITH RankedEmp AS (
+  SELECT *, RANK() OVER(PARTITION BY DeptID ORDER BY Salary DESC) rnk
+  FROM Employees
+)
+SELECT * FROM RankedEmp;
+
+--Q12--Top 2 highest paid employees per department
+WITH RankedEmp AS (
+  SELECT *, DENSE_RANK() OVER(PARTITION BY DeptID ORDER BY Salary DESC) rnk
+  FROM Employees
+)
+SELECT * FROM RankedEmp WHERE rnk <= 2;
+
+--Q13--Cumulative salary by department
+WITH CumSal AS (
+  SELECT DeptID, EmpName,
+         SUM(Salary) OVER(PARTITION BY DeptID ORDER BY Salary) CumSalary
+  FROM Employees
+)
+SELECT * FROM CumSal;
+
+--Q14--Monthly sales summary using CTE
+WITH MonthlySales AS (
+  SELECT FORMAT(SaleDate,'yyyy-MM') Month, SUM(SaleAmount) TotalSales
+  FROM Sales
+  GROUP BY FORMAT(SaleDate,'yyyy-MM')
+)
+SELECT * FROM MonthlySales;
+
+--Q15--Employees earning above company average
+WITH AvgSal AS (
+  SELECT AVG(Salary) AvgCompanySalary FROM Employees
+)
+SELECT *
+FROM Employees
+WHERE Salary > (SELECT AvgCompanySalary FROM AvgSal);
+
+--Q16--Manager-employee mapping
+WITH ManagerMap AS (
+  SELECT e.EmpName Employee, m.EmpName Manager
+  FROM Employees e
+  Left JOIN Employees m ON e.ManagerID = m.EmpID
+)
+SELECT * FROM ManagerMap;
+
+--Q17--Employees contributing more than 30% of dept salary
+WITH DeptTotal AS (
+  SELECT DeptID, SUM(Salary) DeptSal
+  FROM Employees
+  GROUP BY DeptID
+)
+SELECT e.*
+FROM Employees e
+JOIN DeptTotal d ON e.DeptID = d.DeptID
+WHERE e.Salary * 1.0 / d.DeptSal > 0.30;
+
+Select * from Departments;
+Select * from Employees;
+
+
+--Q18--Employee sales percentage contribution
+WITH TotalSales AS (
+  SELECT SUM(SaleAmount) Total FROM Sales
+)
+SELECT EmpID,
+       SUM(SaleAmount) * 100.0 / (SELECT Total FROM TotalSales) AS SalesPct
+FROM Sales
+GROUP BY EmpID;
+
+--Q19--Employees with salary below manager
+WITH ManagerSalary AS (
+  SELECT e.EmpName, e.Salary, m.Salary ManagerSalary
+  FROM Employees e
+  JOIN Employees m ON e.ManagerID = m.EmpID
+)
+SELECT * FROM ManagerSalary WHERE Salary < ManagerSalary;
+
+Select * from Employees;
+
+--Q20--Second highest salary overall
+WITH Ranked AS (
+  SELECT Salary, DENSE_RANK() OVER(ORDER BY Salary DESC) rnk
+  FROM Employees
+)
+SELECT Salary FROM Ranked WHERE rnk = 2;
+
+
+--Q21--Display full employee hierarchy
+WITH EmpHierarchy AS (
+  SELECT EmpID, EmpName, ManagerID, 0 AS Level
+  FROM Employees
+  WHERE ManagerID IS NULL
+  /*
+Picks top-level employees (CEO / Directors)
+These have no manager
+Assigns Level = 0
+EmpID	EmpName	ManagerID	Level
+1	CEO	NULL	0
+  */
+
+  UNION ALL
+
+  SELECT e.EmpID, e.EmpName, e.ManagerID, h.Level + 1
+  FROM Employees e
+  JOIN EmpHierarchy h ON e.ManagerID = h.EmpID
+
+  /*
+  First recursion:
+
+Employees reporting to CEO (EmpID = 1):
+
+EmpID	EmpName	ManagerID	Level
+2	Manager	1	1
+Second recursion:
+
+Employees reporting to Manager (EmpID = 2):
+
+EmpID	EmpName	ManagerID	Level
+3	Lead	2	2
+5	Tester	2	2
+Third recursion:
+
+Employees reporting to Lead (EmpID = 3):
+
+EmpID	EmpName	ManagerID	Level
+4	Dev	3	3
+  */
+
+
+)
+SELECT * FROM EmpHierarchy;
+
+
+--Q23--Problem Statement
+--Find employees who earn more than both the company-wide average salary, 
+--and their department average salary.
+
+
+WITH CompanyAvg AS (
+    SELECT AVG(Salary) AS CompanyAvgSalary
+    FROM Employees
+),
+DeptAvg AS (
+    SELECT DeptID, AVG(Salary) AS DeptAvgSalary
+    FROM Employees
+    GROUP BY DeptID
+)
+SELECT e.*
+FROM Employees e
+JOIN DeptAvg d ON e.DeptID = d.DeptID
+WHERE e.Salary > d.DeptAvgSalary
+  AND e.Salary > (SELECT CompanyAvgSalary FROM CompanyAvg);
+
+--Q24--Employees earning above department average but below company max
+--Find employees whose salary is greater than their department
+-- average but less than the company’s maximum salary.
+
+WITH DeptAvg AS (
+    SELECT DeptID, AVG(Salary) AvgSal
+    FROM Employees
+    GROUP BY DeptID
+),
+CompanyMax AS (
+    SELECT MAX(Salary) MaxSal FROM Employees
+)
+SELECT e.*
+FROM Employees e
+JOIN DeptAvg d ON e.DeptID = d.DeptID
+WHERE e.Salary > d.AvgSal
+  AND e.Salary < (SELECT MaxSal FROM CompanyMax);
+
+--Q25--Employees whose salary equals department maximum
+WITH DeptMax AS (
+    SELECT DeptID, MAX(Salary) MaxSal
+    FROM Employees
+    GROUP BY DeptID
+)
+SELECT e.*
+FROM Employees e
+JOIN DeptMax d ON e.DeptID = d.DeptID
+WHERE e.Salary = d.MaxSal;
+
+--Q26--Count of employees earning above department average
+
+WITH DeptAvg AS (
+    SELECT DeptID, AVG(Salary) AvgSal
+    FROM Employees
+    GROUP BY DeptID
+)
+SELECT COUNT(*) AS EmpCount
+FROM Employees e
+JOIN DeptAvg d ON e.DeptID = d.DeptID
+WHERE e.Salary > d.AvgSal;
+
+--Q27--Employees whose salary rank ≤ 3 within department
+
+WITH RankedEmp AS (
+    SELECT *,
+           DENSE_RANK() OVER(PARTITION BY DeptID ORDER BY Salary DESC) rnk
+    FROM Employees
+)
+SELECT *
+FROM RankedEmp
+WHERE rnk <= 3;
+
+Select * from Employees;
+--Q28--Employees earning more than their manager
+WITH ManagerSalary AS (
+    SELECT e.EmpID, e.EmpName, e.Salary, m.Salary AS ManagerSalary
+    FROM Employees e
+    JOIN Employees m ON e.ManagerID = m.EmpID
+)
+SELECT *
+FROM ManagerSalary
+WHERE Salary > ManagerSalary;
+
+--Q29--Department-wise salary percentage contribution
+WITH DeptTotal AS (
+    SELECT DeptID, SUM(Salary) TotalSal
+    FROM Employees
+    GROUP BY DeptID
+)
+SELECT e.EmpName,
+       e.Salary * 100.0 / d.TotalSal AS SalaryPct
+FROM Employees e
+JOIN DeptTotal d ON e.DeptID = d.DeptID;
+
+--Q30--Employees with salary between department min and max
+WITH DeptRange AS (
+    SELECT DeptID, MIN(Salary) MinSal, MAX(Salary) MaxSal
+    FROM Employees
+    GROUP BY DeptID
+)
+SELECT e.*
+FROM Employees e
+JOIN DeptRange d ON e.DeptID = d.DeptID
+WHERE e.Salary BETWEEN d.MinSal AND d.MaxSal;
+
+--Q31--Top 30% salary earners in each department
+WITH RankedEmp AS (
+    SELECT *,
+           NTILE(10) OVER(PARTITION BY DeptID ORDER BY Salary DESC) bucket
+    FROM Employees
+)
+SELECT *
+FROM RankedEmp
+WHERE bucket <= 3;
+
+--Q32--Employees contributing to top 80% of company salary
+WITH CompanySal AS (
+    SELECT EmpName, Salary,
+           SUM(Salary) OVER() AS TotalSal,
+           SUM(Salary) OVER(ORDER BY Salary DESC) RunSal
+    FROM Employees
+)
+SELECT *
+FROM CompanySal
+WHERE RunSal <= TotalSal * 0.8;
+
+--Q33--Employees with no sales but above department avg salary
+WITH DeptAvg AS (
+    SELECT DeptID, AVG(Salary) AvgSal
+    FROM Employees
+    GROUP BY DeptID
+),
+SalesEmp AS (
+    SELECT DISTINCT EmpID FROM Sales
+)
+SELECT e.*
+FROM Employees e
+JOIN DeptAvg d ON e.DeptID = d.DeptID
+WHERE e.Salary > d.AvgSal
+  AND e.EmpID NOT IN (SELECT EmpID FROM SalesEmp);
+
+--Q34--Department-wise sales vs salary cost
+WITH DeptSalary AS (
+    SELECT DeptID, SUM(Salary) TotalSalary
+    FROM Employees
+    GROUP BY DeptID
+),
+DeptSales AS (
+    SELECT e.DeptID, SUM(s.SaleAmount) TotalSales
+    FROM Employees e
+    JOIN Sales s ON e.EmpID = s.EmpID
+    GROUP BY e.DeptID
+)
+SELECT *
+FROM DeptSalary ds
+JOIN DeptSales dsa ON ds.DeptID = dsa.DeptID;
+
+ --Q35--Employees whose sales exceed department average sales
+WITH EmpSales AS (
+    SELECT EmpID, SUM(SaleAmount) TotalSales
+    FROM Sales
+    GROUP BY EmpID
+),
+DeptAvgSales AS (
+    SELECT e.DeptID, AVG(es.TotalSales) AvgSales
+    FROM Employees e
+    JOIN EmpSales es ON e.EmpID = es.EmpID
+    GROUP BY e.DeptID
+)
+SELECT e.EmpName, es.TotalSales
+FROM Employees e
+JOIN EmpSales es ON e.EmpID = es.EmpID
+JOIN DeptAvgSales d ON e.DeptID = d.DeptID
+WHERE es.TotalSales > d.AvgSales;
+
+--Q36--Find second highest salary per department
+WITH RankedEmp AS (
+    SELECT *,
+           DENSE_RANK() OVER(PARTITION BY DeptID ORDER BY Salary DESC) rnk
+    FROM Employees
+)
+SELECT *
+FROM RankedEmp
+WHERE rnk = 2;
+
+--Q37--Identify departments with salary cost above company average
+WITH DeptCost AS (
+    SELECT DeptID, SUM(Salary) DeptSal
+    FROM Employees
+    GROUP BY DeptID
+),
+CompanyAvg AS (
+    SELECT AVG(DeptSal) AvgCost FROM DeptCost
+)
+SELECT *
+FROM DeptCost
+WHERE DeptSal > (SELECT AvgCost FROM CompanyAvg);
+
+--Q38--Salary gap between employee and department average
+WITH DeptAvg AS (
+    SELECT DeptID, AVG(Salary) AvgSal
+    FROM Employees
+    GROUP BY DeptID
+)
+SELECT e.EmpName,
+       e.Salary - d.AvgSal AS SalaryGap
+FROM Employees e
+JOIN DeptAvg d ON e.DeptID = d.DeptID;
+
+--Q39--Employees whose salary is closer to department max than min
+WITH DeptRange AS (
+    SELECT DeptID, MIN(Salary) MinSal, MAX(Salary) MaxSal
+    FROM Employees
+    GROUP BY DeptID
+)
+SELECT e.*
+FROM Employees e
+JOIN DeptRange d ON e.DeptID = d.DeptID
+WHERE ABS(e.Salary - d.MaxSal) < ABS(e.Salary - d.MinSal);
