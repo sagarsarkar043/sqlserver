@@ -1,0 +1,9 @@
+--Create Table
+CREATE TABLE EmployeeSales (
+    EmpID INT,
+    EmpName VARCHAR(50),
+    Region VARCHAR(20),
+    Product VARCHAR(20),
+    SaleMonth VARCHAR(10),
+    SalesAmount INT
+);
