@@ -1,0 +1,58 @@
+-- Database Design (Tables)
+--We will use 4 core tables:
+/*
+Customers
+
+Accounts
+
+Transactions
+
+Loans
+
+*/
+
+Create database Project;
+
+use Project;
+
+--Customers Table
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    CustomerName VARCHAR(100),
+    Gender CHAR(1),
+    Age INT,
+    City VARCHAR(50),
+    AccountOpenDate DATE
+);
+
+--Accounts Table
+CREATE TABLE Accounts (
+    AccountID INT PRIMARY KEY,
+    CustomerID INT,
+    AccountType VARCHAR(20),
+    Balance DECIMAL(12,2),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+--Transactions Table
+CREATE TABLE Transactions (
+    TransactionID INT PRIMARY KEY,
+    AccountID INT,
+    TransactionDate DATE,
+    TransactionType VARCHAR(10),
+    Amount DECIMAL(10,2),
+    FOREIGN KEY (AccountID) REFERENCES Accounts(AccountID)
+);
+
+--Loans Table
+CREATE TABLE Loans (
+    LoanID INT PRIMARY KEY,
+    CustomerID INT,
+    LoanAmount DECIMAL(12,2),
+    LoanType VARCHAR(30),
+    InterestRate DECIMAL(5,2),
+    LoanStatus VARCHAR(20),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+
