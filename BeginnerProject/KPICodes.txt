@@ -1,0 +1,441 @@
+--CUSTOMER ANALYTICS KPIs
+--1--Total Number of Customers
+/*
+Problem Statement:
+Find the total number of customers registered with the bank.
+*/
+
+
+SELECT COUNT(*) AS TotalCustomers
+FROM Customers;
+
+--2--Customers by Gender
+/*
+Problem Statement:
+Analyze customer distribution by gender.
+*/
+
+SELECT Gender, COUNT(*) AS CustomerCount
+FROM Customers
+GROUP BY Gender;
+
+--3--Average Customer Age
+/*
+Problem Statement:
+Calculate the average age of bank customers.
+*/
+
+SELECT AVG(Age) AS AverageCustomerAge
+FROM Customers;
+
+--4️--City-wise Customer Distribution
+/*
+Problem Statement:
+Identify how customers are distributed across cities.
+*/
+
+Select * from Customers;
+
+SELECT City, COUNT(*) AS TotalCustomers
+FROM Customers
+GROUP BY City;
+
+--5--New Customers Added Per Year
+/*
+Problem Statement:
+Track customer onboarding trends year-wise.
+*/
+
+SELECT YEAR(AccountOpenDate) AS Year, COUNT(*) AS NewCustomers
+FROM Customers
+GROUP BY YEAR(AccountOpenDate)
+ORDER BY Year;
+
+--6--Customers Above a Certain Age (Age > 40)
+/*
+Problem Statement:
+Identify senior customers for targeted products.
+*/
+
+SELECT CustomerName, Age
+FROM Customers
+WHERE Age > 40;
+
+--7--Metro City Customers (Mumbai / Delhi)
+/*
+Problem Statement:
+Find customers residing in metro cities.
+*/
+
+SELECT *
+FROM Customers
+WHERE City IN ('Mumbai', 'Delhi');
+
+--City ='Mumbai' OR City='Delhi'
+
+--8--Customers Without Bank Accounts
+/*
+Problem Statement:
+Identify customers who do not have any bank account.
+*/
+Select CustomerID from Customers;
+Select CustomerID from Accounts;
+
+
+SELECT c.CustomerID, c.CustomerName
+FROM Customers c
+LEFT JOIN Accounts a ON c.CustomerID = a.CustomerID
+WHERE a.AccountID IS NULL;
+
+--ACCOUNT ANALYTICS KPIs
+--9--Total Bank Deposits
+/*
+Problem Statement:
+Calculate total deposits held by the bank.
+*/
+
+SELECT SUM(Balance) AS TotalBankDeposits
+FROM Accounts;
+
+--10-- Average Account Balance
+/*
+Problem Statement:
+Find the average balance across all accounts.
+*/
+
+SELECT AVG(Balance) AS AverageBalance
+FROM Accounts;
+
+--11--Account Type-wise Balance
+/*
+Problem Statement:
+Compare balances across savings and current accounts.
+*/
+
+SELECT AccountType, SUM(Balance) AS TotalBalance
+FROM Accounts
+GROUP BY AccountType;
+
+ --12--High Value Accounts (Balance > ₹1,00,000)
+/*
+Problem Statement:
+Identify high-value customers for premium offerings.
+*/
+
+SELECT *
+FROM Accounts
+WHERE Balance > 100000;
+
+--13--Customer-wise Account Balance
+/*
+Problem Statement:
+Show each customer’s account balance.
+*/
+
+Select * from Customers;
+Select * from Accounts;
+SELECT c.CustomerName, a.Balance
+FROM Customers c
+JOIN Accounts a ON c.CustomerID = a.CustomerID;
+
+--14--Top 3 Accounts by Balance
+/*
+Problem Statement:
+Identify top 3 accounts with the highest balance.
+*/
+
+SELECT TOP 3 *
+FROM Accounts
+ORDER BY Balance DESC;
+
+--15--Non-Savings Accounts Count
+/*
+Problem Statement:
+Find the count of non-savings accounts.
+*/
+SELECT COUNT(*) AS NonSavingsAccounts
+FROM Accounts
+WHERE AccountType <> 'Savings';
+
+--16--Accounts with No Transactions
+/*
+Problem Statement:
+Identify inactive accounts.
+*/
+
+SELECT a.AccountID
+FROM Accounts a
+LEFT JOIN Transactions t ON a.AccountID = t.AccountID
+WHERE t.TransactionID IS NULL;
+
+--17--Account Vintage (Years with Bank)
+/*
+Problem Statement:
+Calculate how long each customer has been with the bank.
+*/
+
+SELECT CustomerName,
+DATEDIFF(YEAR, AccountOpenDate, GETDATE()) AS AccountVintageYears
+FROM Customers;
+
+
+--TRANSACTION ANALYTICS KPIs
+
+
+--18--Total Transaction Amount
+
+
+SELECT SUM(Amount) AS TotalTransactionAmount
+FROM Transactions;
+
+--19--Total Number of Transactions
+
+SELECT COUNT(*) AS TransactionCount
+FROM Transactions;
+
+--20--Credit vs Debit Transaction Amount
+          
+Select * from Transactions;
+
+SELECT TransactionType, SUM(Amount) AS TotalAmount
+FROM Transactions
+GROUP BY TransactionType;
+
+
+
+--21--Monthly Transaction Volume
+SELECT YEAR(TransactionDate) AS Year,
+       MONTH(TransactionDate) AS Month,
+       SUM(Amount) AS MonthlyVolume
+FROM Transactions
+GROUP BY YEAR(TransactionDate), MONTH(TransactionDate)
+ORDER BY Year, Month;
+
+
+
+--22--Average Transaction Amount
+
+
+SELECT AVG(Amount) AS AvgTransactionAmount
+FROM Transactions;
+
+--23--Most Active Account
+
+Select * from Transactions;
+
+SELECT TOP 1 AccountID, COUNT(*) AS TxnCount
+FROM Transactions
+GROUP BY AccountID
+ORDER BY TxnCount DESC;
+
+ --24--Running Total of Transactions
+
+
+
+SELECT AccountID, TransactionDate, Amount,
+SUM(Amount) OVER (PARTITION BY AccountID ORDER BY TransactionDate) AS RunningTotal
+FROM Transactions;
+
+SELECT  TransactionDate, Amount,
+SUM(Amount) OVER ( ORDER BY TransactionDate) AS RunningTotal
+FROM Transactions;
+
+
+
+--25--Previous Transaction Amount per AccountID
+SELECT AccountID, TransactionDate, Amount,
+LAG(Amount) OVER (PARTITION BY AccountID ORDER BY TransactionDate) AS PrevAmount
+FROM Transactions;
+
+-- LOAN ANALYTICS KPIs
+
+--26--Total Loan Amount Issued
+
+SELECT SUM(LoanAmount) AS TotalLoans
+FROM Loans;
+
+Select * from Loans;
+
+--27--Loan Amount by Loan Type
+SELECT LoanType, SUM(LoanAmount) AS TotalLoanAmount
+FROM Loans
+GROUP BY LoanType;
+
+--28--Average Loan Amount
+SELECT AVG(LoanAmount) AS AvgLoanAmount
+FROM Loans;
+
+--29--Active Loans Count
+
+Select * from Loans;
+
+
+SELECT COUNT(*) AS ActiveLoans
+FROM Loans
+WHERE LoanStatus = 'Active';
+
+SELECT LoanStatus,COUNT(*) AS LoanCount
+FROM Loans
+group by LoanStatus;
+
+
+--30--Defaulted Loans Count
+SELECT COUNT(*) AS DefaultedLoans
+FROM Loans
+WHERE LoanStatus = 'Defaulted';
+
+--31--Loan Default Rate (%)
+
+
+
+
+SELECT 
+(SUM(CASE WHEN LoanStatus='Defaulted' THEN 1 ELSE 0 END)*100.0)/COUNT(*) 
+AS DefaultRate
+FROM Loans;
+
+SELECT 
+(SUM(CASE WHEN LoanStatus='Active' THEN 1 ELSE 0 END)*100.0)/COUNT(*) 
+AS DefaultRate
+FROM Loans;
+
+--32--Customer-wise Loan Exposure
+
+select * from Loans;
+Select * from Customers;
+
+SELECT c.CustomerName, SUM(l.LoanAmount) AS LoanExposure
+FROM Customers c
+JOIN Loans l ON c.CustomerID = l.CustomerID
+GROUP BY c.CustomerName
+--having SUM(l.LoanAmount) is not null;
+
+--33-- Customers with Multiple Loans
+
+
+
+SELECT CustomerID, COUNT(*) AS LoanCount
+FROM Loans
+GROUP BY CustomerID
+HAVING COUNT(*) > 1;
+
+--34--Customers with No Loans
+SELECT *
+FROM Customers
+WHERE CustomerID NOT IN (SELECT DIstinct(CustomerID) FROM Loans);
+
+
+
+--35--Maximum Loan Amount Issued
+SELECT MAX(LoanAmount) AS MaxLoan
+FROM Loans;
+
+--PROFITABILITY & RISK KPIs
+
+--36--Estimated Annual Interest Income
+
+Select * from Loans;
+
+
+SELECT SUM(LoanAmount * InterestRate / 100) AS InterestIncome
+FROM Loans
+WHERE LoanStatus = 'Active';
+
+SELECT LoanID,LoanAmount * (InterestRate / 100) AS InterestIncome
+FROM Loans
+WHERE LoanStatus = 'Active';
+
+--37-- Loan to Deposit Ratio (LDR)
+Select * from Accounts;
+Select * from Loans;
+
+
+SELECT 
+(SELECT SUM(LoanAmount) FROM Loans)*1.0 /
+(SELECT SUM(Balance) FROM Accounts) AS LDR;
+
+--38--Customer Profitability Indicator
+SELECT c.CustomerName,
+SUM(l.LoanAmount * l.InterestRate / 100) AS InterestGenerated
+FROM Customers c
+JOIN Loans l ON c.CustomerID = l.CustomerID
+GROUP BY c.CustomerName;
+
+Select * from Loans;
+Select * from Customers;
+
+--39--High-Risk Customers
+
+
+SELECT DISTINCT c.CustomerName
+FROM Customers c
+JOIN Loans l ON c.CustomerID = l.CustomerID
+WHERE LoanStatus = 'Defaulted';
+
+--ADVANCED ANALYTICS (WINDOW FUNCTIONS)
+--40-- Rank Customers by Account Balance
+SELECT c.CustomerName, a.Balance,
+DENSE_RANK() OVER (ORDER BY a.Balance DESC) AS BalanceRank
+FROM Customers c
+JOIN Accounts a ON c.CustomerID = a.CustomerID;
+
+--41-- Highest Loan Per Customer
+
+Select * from Loans;
+
+
+select l.CustomerID,c.CustomerName,MAX(LoanAmount)
+from Loans l join Customers c
+ON l.CustomerID= c.CustomerID
+Group by l.CustomerID,c.CustomerName;
+
+
+SELECT *
+FROM (
+  SELECT *, RANK() OVER (PARTITION BY CustomerID ORDER BY LoanAmount DESC) r
+  FROM Loans
+) x
+WHERE r = 1;
+
+--42-- Running Transaction Total Over Time
+
+SELECT TransactionDate,
+SUM(Amount) OVER (ORDER BY TransactionDate) AS RunningTxnTotal
+FROM Transactions;
+
+--ADVANCED REPORTING (CTE, PIVOT, UNPIVOT)
+
+--43--High-Risk Customers Using CTE
+
+WITH Risky AS (
+  SELECT CustomerID FROM Loans WHERE LoanStatus='Defaulted'
+)
+SELECT c.CustomerName
+FROM Customers c
+JOIN Risky r ON c.CustomerID = r.CustomerID;
+
+Select * from Customers;
+
+
+--44--Top Customer by Total Transaction Value (CTE)
+
+Select * from Transactions;
+
+WITH TxnSum AS (
+  SELECT AccountID, SUM(Amount) AS TotalTxn
+  FROM Transactions
+  GROUP BY AccountID
+)
+SELECT TOP 1 * FROM TxnSum ORDER BY TotalTxn DESC;
+
+--45--Monthly Credit vs Debit Analysis (PIVOT)
+SELECT *
+FROM (
+  SELECT FORMAT(TransactionDate,'yyyy-MM') AS TxnMonth,
+         TransactionType, Amount
+  FROM Transactions
+) s
+PIVOT (
+  SUM(Amount) FOR TransactionType IN ([Credit],[Debit])
+) p;
+
